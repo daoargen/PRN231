@@ -1,0 +1,49 @@
+# Các tệp và thư mục của Visual Studio
+.vs/
+*.user
+*.suo
+
+# Thư mục xuất bản
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# Tệp tạm của Visual Studio
+*.cache
+*.ilk
+*.log
+*.tlog
+*.tmp
+*.tmp_proj
+*.vscode/
+
+# Tệp và thư mục môi trường phát triển
+.idea/
+*.sln.docstates
+
+# Tệp tạm của hệ điều hành
+Thumbs.db
+*.DS_Store
+
+# Tệp cấu hình người dùng không nên chia sẻ
+appsettings.json
+appsettings.*.json
+secrets.json
+
+# Tệp lock hoặc tạm thời
+*.lock.json
+*.log
+.lock-wscript
+
+# Tệp backup
+*.bak
+
+# Node.js (nếu có sử dụng Node.js trong dự án)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Các tệp được sinh tự động
+*.generated.cs
