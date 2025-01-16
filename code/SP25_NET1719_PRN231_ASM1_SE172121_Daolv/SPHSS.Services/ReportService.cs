@@ -7,8 +7,8 @@ namespace SPHSS.Services
     {
         Task<List<Report>> GetAll();
         Task<Report> GetById(Guid id);
-        Task<int> Create(Report dashboard);
-        Task<int> Update(Report dashboard);
+        Task<int> Create(Report report);
+        Task<int> Update(Report report);
         Task<bool> Delete(Guid id);
     }
 
@@ -17,29 +17,39 @@ namespace SPHSS.Services
         private ReportRepository _repository;
         public ReportService() => _repository = new ReportRepository();
 
-        public Task<int> Create(Report dashboard)
+        public async Task<int> Create(Report report)
         {
-            throw new NotImplementedException();
+            return await _repository.CreateAsync(report);
         }
 
-        public Task<bool> Delete(Guid id)
+        public async Task<bool> Delete(Guid id)
         {
-            throw new NotImplementedException();
+            var item = await _repository.GetByIdAsync(id);
+            if (item != null)
+            {
+                return await _repository.RemoveAsync(item);
+            }
+            return false;
         }
 
-        public Task<List<Report>> GetAll()
+        public async Task<List<Report>> GetAll()
         {
-            throw new NotImplementedException();
+            return await _repository.GetAll();
         }
 
-        public Task<Report> GetById(Guid id)
+        public async Task<Report> GetById(Guid id)
         {
-            throw new NotImplementedException();
+            return await _repository.GetByIdAsync(id);
         }
 
-        public Task<int> Update(Report dashboard)
+        public async Task<int> Update(Report report)
         {
-            throw new NotImplementedException();
+            var item = await _repository.GetByIdAsync(report.Id);
+            if (item != null)
+            {
+                return await _repository.UpdateAsync(item);
+            }
+            return 0;
         }
     }
 }

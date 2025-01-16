@@ -4,6 +4,9 @@ dotnet add package Microsoft.EntityFrameworkCore.Tools --version 8.0.5
 dotnet add package Microsoft.Extensions.Configuration --version 8.0.0
 dotnet add package Microsoft.Extensions.Configuration.Json --version 8.0.0
 
+dotnet add package  Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.10
+
+
 
 // cái này add vào trong file context
 // commnet hàm OnConfiguring này lại

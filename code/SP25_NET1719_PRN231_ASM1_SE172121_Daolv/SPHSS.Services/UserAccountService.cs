@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SPHSS.Repository;
+using SPHSS.Repository.Models;
 
 namespace SPHSS.Services
 {
-    internal class UserAccountService
+    public class UserAccountService
     {
+        private readonly UserAccountRepository _repository;
+        public UserAccountService() => _repository = new UserAccountRepository();
+        public async Task<UserAccount> Authenticate(string userName, string password)
+        {
+            return await _repository.GetUserAccountAsync(userName, password);
+        }
     }
 }

@@ -24,5 +24,11 @@ namespace SPHSS.Repository
                 ).ToListAsync();
             return items;
         }
+
+        public async Task<Dashboard> GetByIdAsync(Guid id)
+        {
+            var item = await _context.Dashboards.Include(a => a.Report).FirstOrDefaultAsync(a => a.Id == id);
+            return item;
+        }
     }
 }

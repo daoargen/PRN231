@@ -53,7 +53,7 @@ namespace SPHSS.Services
             var item = await _repository.GetByIdAsync(dashboard.Id);
             if (item != null)
             {
-                return await _repository.UpdateAsync(item);
+                return await _repository.UpdateAsync(dashboard);
             }
             return 0;
         }
