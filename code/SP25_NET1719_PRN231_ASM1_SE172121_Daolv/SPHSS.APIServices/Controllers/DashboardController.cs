@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SPHSS.Repository.Models;
 using SPHSS.Services;
 
@@ -20,6 +21,7 @@ namespace SPHSS.APIServices.Controllers
 
         // GET: api/<DashboardController>
         [HttpGet]
+        [Authorize(Roles = "1, 2")]
         // public IEnumerable<string> Get()
         public async Task<IEnumerable<Dashboard>> Get()
         {
@@ -28,6 +30,7 @@ namespace SPHSS.APIServices.Controllers
 
         // GET api/<DashboardController>/5
         [HttpGet("{id}")]
+        [Authorize(Roles = "1, 2")]
         // public string Get(int id)
         public async Task<Dashboard> Get(Guid id)
         {
@@ -36,6 +39,7 @@ namespace SPHSS.APIServices.Controllers
 
         // GET api/<DashboardController>/5
         [HttpGet("search")]
+        [Authorize(Roles = "1, 2")]
         // public string Get(int id)
         public async Task<IEnumerable<Dashboard>> Search(string? MetricValue, string? MetricName)
         {
@@ -44,6 +48,7 @@ namespace SPHSS.APIServices.Controllers
 
         // POST api/<DashboardController>
         [HttpPost]
+        [Authorize(Roles = "1, 2")]
         public async Task<int> Post(Dashboard dashboard)
         {
             return await _services.Create(dashboard);
@@ -51,6 +56,7 @@ namespace SPHSS.APIServices.Controllers
 
         // PUT api/<DashboardController>/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "1, 2")]
         public async Task<int> Put(Dashboard dashboard)
         {
             return await _services.Update(dashboard);
@@ -58,6 +64,7 @@ namespace SPHSS.APIServices.Controllers
 
         // DELETE api/<DashboardController>/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "1")]
         public async Task<bool> Delete(Guid id)
         {
             return await _services.Delete(id);

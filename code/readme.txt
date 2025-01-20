@@ -4,6 +4,7 @@ dotnet add package Microsoft.EntityFrameworkCore.Tools --version 8.0.5
 dotnet add package Microsoft.Extensions.Configuration --version 8.0.0
 dotnet add package Microsoft.Extensions.Configuration.Json --version 8.0.0
 
+// install cái này trong service
 dotnet add package  Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.10
 
 
@@ -402,11 +403,300 @@ namespace SPHSS.APIServices
 // chỉnh appsetting.json 
 
 
+// thêm code sau phía dưới phần AddScope trong program.cs
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+    });
 
 
 
+builder.Services.AddSwaggerGen(option =>
+{
+    ////JWT Config
+    option.DescribeAllParametersInCamelCase();
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
+
+// tạo 1 UserAccountController
+// nhét code sau vào trong đó 
+
+[Route("api/[controller]")]
+    [ApiController]
+    public class UserAccountController : Controller
+    {
+        private readonly IConfiguration _config;
+        private readonly UserAccountService _userAccountsService;
+
+        public UserAccountController(IConfiguration config, UserAccountService userAccountsService)
+        {
+            _config = config;
+            _userAccountsService = userAccountsService;
+        }
+
+        [HttpPost("Login")]
+        public IActionResult Login([FromBody] LoginReqeust request)
+        {
+            var user = _userAccountsService.Authenticate(request.UserName, request.Password);
+
+            if (user == null || user.Result == null)
+                return Unauthorized();
+
+            var token = GenerateJSONWebToken(user.Result);
+
+            return Ok(token);
+        }
+
+        private string GenerateJSONWebToken(UserAccount systemUserAccount)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"]
+                    , _config["Jwt:Audience"]
+                    , new Claim[]
+                    {
+                new(ClaimTypes.Name, systemUserAccount.UserName),
+                //new(ClaimTypes.Email, systemUserAccount.Email),
+                new(ClaimTypes.Role, systemUserAccount.RoleId.ToString()),
+                    },
+                    expires: DateTime.Now.AddMinutes(120),
+                    signingCredentials: credentials
+                );
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return tokenString;
+        }
+
+        public sealed record LoginReqeust(string UserName, string Password);
 
 
+// thêm cái này dưới các api để phân quyền 
+[Authorize(Roles = "1, 2")]
 
+// như này này 
+
+        // GET: api/<DashboardController>
+        [HttpGet]
+        [Authorize(Roles = "1, 2")]
+        // public IEnumerable<string> Get()
+        public async Task<IEnumerable<Dashboard>> Get()
+        {
+            return await _services.GetAll();
+        }
+
+
+// tạo project MVC đã ping 
+// sau đó chọn chỉnh start up project, chọn multi, chọn start  với 2 project api và mvc
+// tạo 1 class tên là LoginRequest trong models
+
+public class LoginRequest
+    {
+        public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+}
+
+// tạo 1 AccountController trong controller và nhét code sau vào đó *nhớ chỉnh cái APIEndpoint
+
+
+private string APIEndPoint = "http://localhost:5042/api/";
+        public IActionResult Index()
+        {
+            return RedirectToAction("Login");
+        }
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginRequest login)
+        {
+
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    using (var response = await httpClient.PostAsJsonAsync(APIEndPoint + "UserAccount/Login", login))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            var tokenString = await response.Content.ReadAsStringAsync();
+
+                            var tokenHandler = new JwtSecurityTokenHandler();
+                            var jwtToken = tokenHandler.ReadToken(tokenString) as JwtSecurityToken;
+
+                            if (jwtToken != null)
+                            {
+                                var userName = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value;
+                                var role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+                                var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, userName),
+                            new Claim(ClaimTypes.Role, role),
+                        };
+
+                                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+
+                                Response.Cookies.Append("UserName", userName);
+                                Response.Cookies.Append("Role", role);
+
+                                return RedirectToAction("Index", "Home");
+
+                                //if (role == "4" || role == "3")
+                                //{
+                                //    return View(new List<CosmeticInformation>());
+                                //}
+                                //else
+                                //{
+                                //    response = await httpClient.GetAsync("CosmesticInformation/odata");
+                                //}                                
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            ModelState.AddModelError("", "Login failure");
+            return View();
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return RedirectToAction("Login", "Account");
+        }
+
+        public async Task<IActionResult> Forbidden()
+        {
+            return View();
+        }
+
+
+// trong view tạo folder Account có 2 file view là Forbidden.cshtml và Login.cshtml
+
+// code trong Forbidden.cshtml
+
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="row text-center">
+    <h3 class="text-danger">Forbidden</h3>
+    <h4 class="text-danger">You do not have permission to do this function!</h4>
+</div>
+
+// code trong Login.cshtml
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@model SPHSS.MVCApp.FE.Models.LoginRequest
+
+<div class="row">
+    <div class="col-md-4">
+    </div>
+    <div class="col-md-4">
+        <form asp-action="Login">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="UserName" class="control-label"></label>
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input type="password" asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Login" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="col-md-4">
+    </div>
+</div>
+
+// trong program.cs thì thêm cái này 
+
+builder.Services.AddAuthentication()
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.LoginPath = new PathString("/Account/Login");
+        options.AccessDeniedPath = new PathString("/Account/Forbidden");
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+    });
+
+// dưới phần 
+// Add services to the container.
+ builder.Services.AddControllersWithViews();
+
+ // thêm 
+ app.UseAuthentication();
+
+//thêm cái 
+ [Authorize(Roles = "1")]
+// cho cả cái home controller để nó ko authen đc và tự động chuyển qua trang login 
+
+
+// trong Shared/_Layout phía trên thẻ nav thêm cái code này 
+
+<div class="nav-item text-nowrap">
+                    Welcome
+                    <strong>@Context.Request.Cookies["UserName"].ToString()</strong>
+                    | <a href="/Account/Logout">Sign Out</a>
+                </div>
+            </div>
+        </nav>
+// nhìn thì thấy nó trên nav và div mới thêm code đó vào
 
 

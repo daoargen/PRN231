@@ -3,6 +3,7 @@ using SPHSS.Repository.Models;
 
 namespace SPHSS.Services
 {
+
     public class UserAccountService
     {
         private readonly UserAccountRepository _repository;

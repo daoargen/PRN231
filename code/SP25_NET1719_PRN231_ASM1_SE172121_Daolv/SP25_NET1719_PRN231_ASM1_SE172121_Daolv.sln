@@ -5,9 +5,11 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPHSS.Repository", "SPHSS.Repository\SPHSS.Repository.csproj", "{A4FC8D58-C44D-47DC-AB93-49472566E8D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPHSS.Services", "SPHSS.Services\SPHSS.Services.csproj", "{89E9706F-B388-4D2E-A7FD-42872499D34C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPHSS.Services", "SPHSS.Services\SPHSS.Services.csproj", "{89E9706F-B388-4D2E-A7FD-42872499D34C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPHSS.APIServices", "SPHSS.APIServices\SPHSS.APIServices.csproj", "{18357296-D1E1-4A1F-9811-504A5C18E5CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPHSS.APIServices", "SPHSS.APIServices\SPHSS.APIServices.csproj", "{18357296-D1E1-4A1F-9811-504A5C18E5CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPHSS.MVCApp.FE", "SPHSS.MVCApp.FE\SPHSS.MVCApp.FE.csproj", "{ACE7C39B-C545-40A8-9838-EA91C51F96F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{18357296-D1E1-4A1F-9811-504A5C18E5CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18357296-D1E1-4A1F-9811-504A5C18E5CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{18357296-D1E1-4A1F-9811-504A5C18E5CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE7C39B-C545-40A8-9838-EA91C51F96F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE7C39B-C545-40A8-9838-EA91C51F96F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE7C39B-C545-40A8-9838-EA91C51F96F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE7C39B-C545-40A8-9838-EA91C51F96F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
