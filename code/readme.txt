@@ -7,6 +7,10 @@ dotnet add package Microsoft.Extensions.Configuration.Json --version 8.0.0
 // install cái này trong service
 dotnet add package  Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.10
 
+// install cái này vào trong webApp
+dotnet add package System.IdentityModel.Tokens.Jwt --version 8.3.0
+
+
 
 
 // cái này add vào trong file context
@@ -698,5 +702,44 @@ builder.Services.AddAuthentication()
             </div>
         </nav>
 // nhìn thì thấy nó trên nav và div mới thêm code đó vào
+
+
+// cho cái FE ref tới repo để tự gen các ui như hồi prn 2, nhớ khi làm xong thì remove các ref đó, 
+
+//commnet tất cả trong contrller đc tạo cho code sau vào, nhớ chỉnh 
+
+private string APIEndPoint = "http://localhost:5042/api/";
+
+        public DashboardsController()
+        {
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            using (var httpClient = new HttpClient())
+            {
+                // get token
+                string token = HttpContext.Request.Cookies["Token"];
+
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+                using (var response = await httpClient.GetAsync(APIEndPoint + "Dashboard"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<List<Dashboard>>(content);
+
+                        if (result != null)
+                        {
+                            return View(result);
+                        }
+                    }
+                }
+            }
+
+            return View(new List<Dashboard>());
+        }
+
 
 

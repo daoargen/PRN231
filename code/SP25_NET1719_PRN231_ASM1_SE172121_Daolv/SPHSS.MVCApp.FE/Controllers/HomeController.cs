@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace SPHSS.MVCApp.FE.Controllers
 {
-    [Authorize(Roles = "1,2")]
+
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -15,7 +15,7 @@ namespace SPHSS.MVCApp.FE.Controllers
             _logger = logger;
         }
 
-
+        [Authorize(Roles = "1")]
         public IActionResult Index()
         {
             return View();

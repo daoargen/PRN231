@@ -43,18 +43,19 @@ namespace SPHSS.MVCApp.FE.Controllers
                                 var role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
 
                                 var claims = new List<Claim>
-                        {
-                            new Claim(ClaimTypes.Name, userName),
-                            new Claim(ClaimTypes.Role, role),
-                        };
+                                {
+                                    new Claim(ClaimTypes.Name, userName),
+                                    new Claim(ClaimTypes.Role, role),
+                                };
 
                                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
 
                                 Response.Cookies.Append("UserName", userName);
                                 Response.Cookies.Append("Role", role);
+                                Response.Cookies.Append("Token", tokenString);
 
-                                return RedirectToAction("Privacy", "Home");
+                                return RedirectToAction("privacy", "Home");
 
                                 //if (role == "4" || role == "3")
                                 //{
@@ -82,6 +83,11 @@ namespace SPHSS.MVCApp.FE.Controllers
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            Response.Cookies.Delete("UserName");
+            Response.Cookies.Delete("Role");
+            Response.Cookies.Delete("Token");
+
             return RedirectToAction("Login", "Account");
         }
 
