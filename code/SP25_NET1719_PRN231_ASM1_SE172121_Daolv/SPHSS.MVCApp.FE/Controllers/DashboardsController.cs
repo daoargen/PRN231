@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
 using SPHSS.Repository.Models;
 
@@ -87,14 +88,74 @@ namespace SPHSS.MVCApp.FE.Controllers
             return View(new Dashboard());
         }
 
-        /*// GET: Dashboards/Create
-        public IActionResult Create()
+        public async Task<List<Report>> GetReports()
         {
-            ViewData["ReportId"] = new SelectList(_context.Reports, "Id", "Tittle");
+            using (var httpClient = new HttpClient())
+            {
+                // get token
+                string token = HttpContext.Request.Cookies["Token"];
+
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+                using (var response = await httpClient.GetAsync(APIEndPoint + "Report"))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject<List<Report>>(content);
+
+                        if (result != null)
+                        {
+                            return result;
+                        }
+                    }
+                }
+            }
+            return new List<Report>();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create([Bind("Id,ReportId,MetricName,MetricValue,MetricCategory,IsDeleted,CreatedAt,UpdateAt")] Dashboard dashboard)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(dashboard);
+            }
+            using (var httpClient = new HttpClient())
+            {
+                // get token
+                string token = HttpContext.Request.Cookies["Token"];
+                httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+                // chuyển thành json
+                using (var response = await httpClient.PostAsJsonAsync(APIEndPoint + "Dashboard", dashboard))
+                {
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var content = await response.Content.ReadAsStringAsync();
+                        var createdDashboard = JsonConvert.DeserializeObject<int>(content);
+
+                        if (createdDashboard > 0)
+                        {
+                            // Chuyển hướng đến trang Index sau khi tạo thành công
+                            return RedirectToAction(nameof(Index));
+                        }
+                    }
+                }
+            }
+            return View(dashboard);
+        }
+
+        [HttpGet]
+        // GET: Dashboards/Create
+        public async Task<IActionResult> CreateAsync()
+        {
+            var reports = await GetReports();
+            ViewData["ReportId"] = new SelectList(reports, "Id", "Tittle");
             return View();
         }
 
-        // POST: Dashboards/Create
+        /*// POST: Dashboards/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]

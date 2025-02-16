@@ -19,6 +19,7 @@ namespace SPHSS.APIServices
             // Dependency Injection
 
             builder.Services.AddScoped<IDashboardService, DashboardService>();
+            builder.Services.AddScoped<IReportService, ReportService>();
             builder.Services.AddScoped<UserAccountService>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
