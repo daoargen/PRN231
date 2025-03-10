@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPHSS.Repository", "..\SP25_NET1719_PRN231_ASM1_SE172121_Daolv\SPHSS.Repository\SPHSS.Repository.csproj", "{07A18086-A25E-495D-8D1E-A6C4EA3FF2AC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SPHSS.Services", "..\SP25_NET1719_PRN231_ASM1_SE172121_Daolv\SPHSS.Services\SPHSS.Services.csproj", "{D2DC815A-2395-4276-AB37-FC8585A00280}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07A18086-A25E-495D-8D1E-A6C4EA3FF2AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07A18086-A25E-495D-8D1E-A6C4EA3FF2AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07A18086-A25E-495D-8D1E-A6C4EA3FF2AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07A18086-A25E-495D-8D1E-A6C4EA3FF2AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2DC815A-2395-4276-AB37-FC8585A00280}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2DC815A-2395-4276-AB37-FC8585A00280}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2DC815A-2395-4276-AB37-FC8585A00280}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2DC815A-2395-4276-AB37-FC8585A00280}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {23120C39-C07A-4A1F-9CDF-DB6B3A492DFB}
+	EndGlobalSection
+EndGlobal

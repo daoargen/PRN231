@@ -6,6 +6,7 @@ dotnet add package Microsoft.Extensions.Configuration.Json --version 8.0.0
 
 // install cái này trong service
 dotnet add package  Microsoft.AspNetCore.Authentication.JwtBearer --version 8.0.10
+dotnet add package Microsoft.AspNetCore.OData --version 8.2.5
 
 // install cái này vào trong webApp
 dotnet add package System.IdentityModel.Tokens.Jwt --version 8.3.0
@@ -741,5 +742,20 @@ private string APIEndPoint = "http://localhost:5042/api/";
             return View(new List<Dashboard>());
         }
 
+// dành cho Odata 
 
+static IEdmModel GetEdmModel()
+{
+    var odataBuilder = new ODataConventionModelBuilder();
+    odataBuilder.EntitySet<CategoryBankAccount>("CategoryBankAccount"); // EDM - ENTITY DATA MODEL
+    odataBuilder.EntitySet<CategoryBank>("CategoryBank"); 
+    return odataBuilder.GetEdmModel();
+}
+builder.Services.AddControllers().AddOData(options =>
+{
+    options.Select().Filter().OrderBy().Expand().SetMaxTop(null).Count();
+    options.AddRouteComponents("odata", GetEdmModel());    
+});
 
+// nhét code sau vào program.cs, phía trước var app = builder.Build();
+// chỉnh lại theo model * cứ add vào đi thì sẽ thấy chỗ cần chỉnh thôi

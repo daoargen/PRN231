@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using SPHSS.Repository.Models;
 using SPHSS.Services;
 
@@ -23,6 +24,7 @@ namespace SPHSS.APIServices.Controllers
         [HttpGet]
         [Authorize(Roles = "1, 2")]
         // public IEnumerable<string> Get()
+        [EnableQuery]
         public async Task<IEnumerable<Dashboard>> Get()
         {
             return await _services.GetAll();

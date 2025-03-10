@@ -1,7 +1,11 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.OData;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
+using SPHSS.Repository.Models;
 using SPHSS.Services;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -76,6 +80,19 @@ namespace SPHSS.APIServices
                 options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.Never;
             });
 
+            static IEdmModel GetEdmModel()
+            {
+                var odataBuilder = new ODataConventionModelBuilder();
+                odataBuilder.EntitySet<Dashboard>("OdataDashboard");
+                odataBuilder.EntitySet<Report>("OdataReport");
+                return odataBuilder.GetEdmModel();
+            }
+            builder.Services.AddControllers().AddOData(options =>
+            {
+                options.Select().Filter().OrderBy().Expand().SetMaxTop(null).Count();
+                options.AddRouteComponents("odata", GetEdmModel());
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -87,6 +104,7 @@ namespace SPHSS.APIServices
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
